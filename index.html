@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cantika Beauty Salon</title>
+  <link rel="stylesheet" href="styles/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    #receipt {
+      background-color: white;
+      color: black;
+      padding: 20px;
+      font-family: monospace;
+    }
+
+    @media print {
+      #download-struk-btn {
+        display: none !important;
+      }
+    }
+    .wrapper {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      width: 100%;
+      height: 100vh;
+    }
+
+    .wrapper > section {
+      scroll-snap-align: start;
+      flex: 0 0 100%;
+      height: 100vh;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="overlay"></div>
+      <div class="title">CANTIKA BEAUTY SALON</div>
+    </section>
+
+    <!-- Haircut Models halaman 1-->
+    <section class="haircut-page">
+      <h2>MODEL HAIR CUT</h2>
+      <img src="images/bg-siluet.png" class="bg-siluet" />
+      <div class="haircut-grid">
+        <img src="images/hair1.jpg" class="hair-img" />
+        <img src="images/hair2.jpg" class="hair-img" />
+        <img src="images/hair3.jpg" class="hair-img" />
+        <img src="images/hair4.jpg" class="hair-img" />
+        <img src="images/hair5.jpg" class="hair-img" />
+        <img src="images/hair6.jpg" class="hair-img" />
+        <img src="images/hair7.jpg" class="hair-img" />
+        <img src="images/hair8.jpg" class="hair-img" />
+      </div>
+    </section>
+
+    <!-- Hair Treatment and Styling halaman 2 -->
+    <section class="price-page">
+      <h2>Hair Treatment</h2>
+      <table class="service-table">
+        <thead><tr><th>Nama</th><th>Harga</th><th>Pilih</th></tr></thead>
+        <tbody id="treatment-list"></tbody>
+      </table>
+
+      <h2>Haircut & Styling</h2>
+      <table class="service-table">
+        <thead><tr><th>Nama</th><th>Harga</th><th>Pilih</th></tr></thead>
+        <tbody id="haircut-list"></tbody>
+      </table>
+    </section>
+
+    <!-- Hair Colour Model halaman 3-->
+    <section class="haircolour-page">
+      <h2>MODEL HAIR COLOUR</h2>
+      <img src="images/bg-siluet.png" class="bg-siluet" />
+      <div class="haircolour-grid">
+        <img src="images/1.jpg" class="hair-img" />
+        <img src="images/2.jpg" class="hair-img" />
+        <img src="images/3.jpg" class="hair-img" />
+        <img src="images/4.jpg" class="hair-img" />
+        <img src="images/5.jpg" class="hair-img" />
+        <img src="images/6.jpg" class="hair-img" />
+        <img src="images/7.jpg" class="hair-img" />
+        <img src="images/8.jpg" class="hair-img" />
+      </div>
+    </section>
+
+    <!-- Coloring and Smoothing halaman 4-->
+    <section class="price-page">
+      <h2>Hair Coloring</h2>
+      <table class="service-table">
+        <thead><tr><th>Nama</th><th>Harga</th><th>Pilih</th></tr></thead>
+        <tbody id="coloring-list"></tbody>
+      </table>
+
+      <h2>Smoothing / Rebonding / Keratin</h2>
+      <table class="service-table">
+        <thead><tr><th>Nama</th><th>Harga</th><th>Pilih</th></tr></thead>
+        <tbody id="smoothing-list"></tbody>
+      </table>
+    </section>
+
+    <!-- Payment Section halaman 5 -->
+    <section class="payment-page">
+      <div class="payment-container-flex">
+        <div class="payment-container">
+          <h2>Pembayaran</h2>
+          <label for="nama">Nama Pelanggan:</label>
+          <input type="text" id="nama" placeholder="Masukkan nama pelanggan" />
+
+          <div>
+            <label><input type="radio" name="payment" value="Lynk ID" checked /> Lynk ID</label>
+            <label><input type="radio" name="payment" value="Cash" /> Cash</label>
+          </div>
+
+          <p>Total yang harus dibayar:</p>
+          <h1 id="total-display">Rp 0</h1>
+
+          <a id="lynkButton" href="http://lynk.id/payme/kelompok7si" target="_blank" class="lynk-pay-button">Bayar via Lynk ID</a>
+          <button id="confirm-btn" class="confirm-btn">Saya Sudah Bayar</button>
+        </div>
+
+        <div id="receipt" style="display: none;">
+          <h2>CANTIKA BEAUTY SALON</h2>
+          <p>Jl. Raya Tim. No.59B, Cipakat,</p>
+          <p>Kec. Singaparna, Kabupaten Tasikmalaya,</p>
+          <p>Jawa Barat 46417</p>
+          <p>Telp: 0812-7705-9099</p>
+          <p id="receipt-date"></p>
+          <p>------------------------------</p>
+          <p id="receipt-name"></p>
+          <ul id="receipt-list"></ul>
+          <p>------------------------------</p>
+          <p id="receipt-total"></p>
+          <p id="receipt-method"></p>
+          <p>------------------------------</p>
+          <p>Terima kasih telah berkunjung!</p>
+          <p><em>https://maps.app.goo.gl/ZUntyotbgSWeUkB69</em></p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const categories = {
+        'Hair Treatment': document.getElementById('treatment-list'),
+        'Haircut & Styling': document.getElementById('haircut-list'),
+        'Hair Coloring': document.getElementById('coloring-list'),
+        'Smoothing / Rebonding / Keratin': document.getElementById('smoothing-list')
+      };
+
+  fetch('https://cantika-backend-production.up.railway.app/services')
+
+        .then(res => res.json())
+        .then(data => {
+          data.forEach(service => {
+            const row = `
+              <tr>
+                <td>${service.name}</td>
+                <td>Rp ${parseInt(service.price).toLocaleString('id-ID')}</td>
+                <td><input type="checkbox" value="${service.id}" data-name="${service.name}" data-price="${service.price}" class="layanan-cb" /></td>
+              </tr>
+            `;
+            if (categories[service.category]) {
+              categories[service.category].innerHTML += row;
+            }
+          });
+
+          const checkboxes = document.querySelectorAll('.layanan-cb');
+          checkboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+              const selected = Array.from(checkboxes).filter(cb => cb.checked);
+              const selectedServices = selected.map(cb => ({
+                id: parseInt(cb.value),
+                name: cb.dataset.name,
+                price: parseInt(cb.dataset.price)
+              }));
+              const total = selectedServices.reduce((sum, s) => sum + s.price, 0);
+              localStorage.setItem('selected_services', JSON.stringify(selectedServices));
+              localStorage.setItem('total_price', total);
+              document.getElementById("total-display").textContent = "Rp " + total.toLocaleString("id-ID");
+            });
+          });
+        });
+
+      document.getElementById("confirm-btn").addEventListener("click", () => {
+        const nama = document.getElementById("nama").value.trim();
+        const metode = document.querySelector('input[name="payment"]:checked')?.value;
+        const selected = JSON.parse(localStorage.getItem("selected_services") || "[]");
+        const total = parseInt(localStorage.getItem("total_price") || "0");
+
+        if (!nama || !metode) {
+          alert("Isi nama dan pilih metode pembayaran.");
+          return;
+        }
+        if (!Array.isArray(selected) || selected.length === 0 || total === 0) {
+          alert("Layanan belum dipilih.");
+          return;
+        }
+
+        fetch("https://cantika-backend-production.up.railway.app/transactions", {
+
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customer_name: nama,
+            payment_method: metode,
+            total_price: total,
+            selected_services: selected.map(s => s.id)
+          }),
+        })
+        .then(res => res.json())
+        .then(data => {
+          const receipt = document.getElementById("receipt");
+          const list = document.getElementById("receipt-list");
+          const totalEl = document.getElementById("receipt-total");
+          const nameEl = document.getElementById("receipt-name");
+          const methodEl = document.getElementById("receipt-method");
+          const dateEl = document.getElementById("receipt-date");
+
+          const now = new Date();
+          const formattedDate = now.toLocaleString("id-ID", {
+            dateStyle: "medium",
+            timeStyle: "short"
+          });
+          dateEl.textContent = formattedDate;
+
+          list.innerHTML = "";
+          selected.forEach(s => {
+            const li = document.createElement("li");
+            li.innerHTML = `<span>${s.name}</span><span>Rp ${s.price.toLocaleString("id-ID")}</span>`;
+            list.appendChild(li);
+          });
+
+          nameEl.textContent = "Nama: " + nama;
+          totalEl.textContent = "Total: Rp " + total.toLocaleString("id-ID");
+          methodEl.textContent = "Metode: " + metode;
+
+          receipt.style.display = "block";
+
+          html2pdf().from(receipt).set({
+            margin: 10,
+            filename: 'struk-transaksi.pdf',
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a6', orientation: 'portrait' }
+          }).save();
+
+          localStorage.clear();
+        })
+        .catch(err => {
+          console.error("❌ Error kirim transaksi:", err);
+          alert("Gagal menyimpan transaksi.");
+        });
+      });
+    });
+  </script>
+</body>
+</html>
